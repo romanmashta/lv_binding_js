@@ -9,3 +9,5 @@ build_arm/test
 CMakeCache.txt
 CMakeFiles
 src/.cache
+.idea
+cmake-build-*

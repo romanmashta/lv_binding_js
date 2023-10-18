@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.26)
+project(lv-binding-js)
 
 set(QUICKJS_PATH ./src/jsruntime/deps/quickjs)
 set(LIBUV_PATH ./src/deps/libuv)
@@ -13,6 +14,8 @@ elseif (${CMAKE_BUILD_TYPE} MATCHES Release)
 endif()
 
 if (${CMAKE_BUILD_TYPE} MATCHES Debug AND ${CMAKE_BUILD_PLATFORM} MATCHES x86)
+add_definitions(-DIS_SIM)
+elseif(${CMAKE_BUILD_PLATFORM} MATCHES arm64)
 add_definitions(-DIS_SIM)
 elseif(${CMAKE_BUILD_PLATFORM} MATCHES arm)
 add_definitions(-DIS_DEVICE)
@@ -37,7 +40,7 @@ include_directories(
     ${CMAKE_CURL_INCLUDE_DIRS}
 )
 
-if (${CMAKE_BUILD_TYPE} MATCHES Debug AND ${CMAKE_BUILD_PLATFORM} MATCHES x86)
+if (${CMAKE_BUILD_TYPE} MATCHES Debug AND (${CMAKE_BUILD_PLATFORM} MATCHES x86 OR ${CMAKE_BUILD_PLATFORM} MATCHES arm64))
     find_package(SDL2 REQUIRED 
         SDL2
     )
@@ -53,9 +56,6 @@ if (${CMAKE_BUILD_TYPE} MATCHES Debug AND ${CMAKE_BUILD_PLATFORM} MATCHES x86)
         ./src/engine/engine.cpp
     )
     target_include_directories(lv_drivers PUBLIC ${SDL2_INCLUDE_DIRS}/../)
-
-    target_link_libraries(lvgljs INTERFACE OpenSSL::Crypto)
-    target_link_libraries(lvgljs INTERFACE OpenSSL::SSL)
 
     target_link_libraries(lvgljs
         jsruntime
